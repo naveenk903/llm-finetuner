@@ -1,0 +1,61 @@
+defaults:
+  - _self_
+  - base_model: llama2_7b
+
+# LoRA configuration
+lora:
+  r: 16  # rank of update matrices
+  alpha: 32  # scaling factor
+  dropout: 0.05
+  target_modules: [q_proj, k_proj, v_proj, o_proj]
+  bias: none
+  task_type: CAUSAL_LM
+
+# Training hyperparameters
+trainer:
+  epochs: 3
+  learning_rate: 2e-4
+  batch_size: 4
+  gradient_accumulation_steps: 8
+  warmup_steps: 100
+  max_steps: 1000
+  eval_steps: 200
+  save_steps: 200
+  logging_steps: 10
+  
+  # Optimizer settings
+  optimizer:
+    type: adamw
+    weight_decay: 0.01
+    gradient_clip: 1.0
+    
+  # Learning rate schedule
+  lr_scheduler:
+    type: cosine
+    num_warmup_steps: 100
+    
+  # Mixed precision training
+  mixed_precision: bf16
+  
+  # Checkpointing
+  save_strategy: steps
+  save_total_limit: 3
+  
+  # Evaluation
+  evaluation_strategy: steps
+  eval_accumulation_steps: 1
+  
+  # Logging
+  report_to: wandb
+  
+# Data processing
+data:
+  max_length: 2048
+  train_test_split: 0.9
+  shuffle_buffer: 10000
+  
+# System
+seed: 42
+device: cuda
+dtype: bfloat16
+num_workers: 4 
